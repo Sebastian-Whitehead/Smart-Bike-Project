@@ -7,7 +7,6 @@
 void SummonAssist(); 
 void ADC_FSR();
 void UpdatePrevious();
-void updateRunningAverage(int reading, float &runningAverage, int &numReadings);
 
 BleKeyboard bleKeyboard("BLE Keyboard", "ESP32", 100);
 #define FORCE_SENSOR_PIN_R 34 // ESP32 pin GPIO34 (ADC0): the FSR and 10K pulldown are connected
@@ -35,23 +34,11 @@ unsigned long firstPressTime_L = 0;
 bool doublePressDetected_R = false;
 bool doublePressDetected_L = false;
 
-// Variables for running calibration
-float runningAverage_R = 0;
-float runningAverage_L = 0;
-int numReadings_R = 0;
-int numReadings_L = 0;
-
-// Calibration parameters
-float calibrationFactor = 1.5;
-unsigned long calibrationTime = 10000; // 10 seconds
-unsigned long calibrationStartTime;
-
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //Disables burnout detector while powering the ESP32 over USB
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
   bleKeyboard.begin();
-  calibrationStartTime = millis();
 }
 
 void loop() {
@@ -60,21 +47,6 @@ void loop() {
     int analogReading_L = analogRead(FORCE_SENSOR_PIN_L);
     Serial.println(analogReading_R);
     Serial.println(analogReading_L);
-
-    // Update running averages and thresholds if a press is not detected
-    if(!State_R) {
-      updateRunningAverage(analogReading_R, runningAverage_R, numReadings_R);
-      Threshold_R = runningAverage_R * calibrationFactor;
-    }
-    if(!State_L) {
-      updateRunningAverage(analogReading_L, runningAverage_L, numReadings_L);
-      Threshold_L = runningAverage_L * calibrationFactor;
-    }
-
-    // Skip button press detection during calibration period
-    if(millis() - calibrationStartTime < calibrationTime) {
-      return;
-    }
 
     Adc_FSR(analogReading_R, analogReading_L); //Convert analog reading to bool values based on predefined thresholds
     // Registers the begining of a press
@@ -212,9 +184,4 @@ void UpdatePrevious(int n){
   R_Prev = State_R;
   L_Prev = State_L;
   delay(n);
-}
-
-void updateRunningAverage(int reading, float &runningAverage, int &numReadings) {
-  runningAverage = ((runningAverage * numReadings) + reading) / (numReadings + 1);
-  numReadings++;
 }
