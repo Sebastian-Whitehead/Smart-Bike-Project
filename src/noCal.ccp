@@ -185,3 +185,33 @@ void UpdatePrevious(int n){
   L_Prev = State_L;
   delay(n);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+const int buttonPin = 2;
+
+
+enum {
+  NONE,
+  SHORT_PRESS,
+  LONG_PRESS,
+  DOUBLE_PRESS
+};
+
+void setup() {
+  pinMode(buttonPin, INPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  checkButtonPress();
+}
