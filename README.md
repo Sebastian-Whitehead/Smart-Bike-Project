@@ -17,9 +17,9 @@ The digram illustrates the circuit for the current prototype the GitHub is built
 |--|--|
 | Single Short Squeeze Either Hand | Pause / Play |
 | Squeeze and Hold Right| Volume Up |
-| Squeeze and Hold Left| Volume Up |
-| Double Short Squeeze Left| Previous Song |
+| Squeeze and Hold Left| Volume Down |
 | Double Short Squeeze Right| Next Song |
+| Double Short Squeeze Left| Previous Song |
 | Squeeze and Hold Right| Summon Google Assistant (Android Only) |
 
 The prototype consists of two force sensitive resistors, one for each side, mounted under each grip in a bike handle assembly together with a battery powered ESP32 centrally mounted by squeezing on either grip the system registers binary inputs after thresholding the analogue read values. 
